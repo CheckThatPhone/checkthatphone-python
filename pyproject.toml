@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "checkthatphone"
+version = "0.1.0"
+description = "Official Python client for the CheckThatPhone phone validation API — US & Canada carrier lookup, line type, TCPA litigator and state DNC screening"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "CheckThatPhone", email = "hello@checkthatphone.com" }]
+keywords = ["phone-validation", "carrier-lookup", "tcpa", "litigator", "dnc", "phone-number", "sms", "nanp"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Topic :: Communications :: Telephony",
+]
+
+[project.urls]
+Homepage = "https://checkthatphone.com"
+Documentation = "https://checkthatphone.com/docs"
+Repository = "https://github.com/CheckThatPhone/checkthatphone-python"
