@@ -1,5 +1,7 @@
 # checkthatphone
 
+[![PyPI version](https://img.shields.io/pypi/v/checkthatphone)](https://pypi.org/project/checkthatphone/) [![CI](https://github.com/CheckThatPhone/checkthatphone-python/actions/workflows/ci.yml/badge.svg)](https://github.com/CheckThatPhone/checkthatphone-python/actions/workflows/ci.yml) [![python >= 3.9](https://img.shields.io/pypi/pyversions/checkthatphone)](https://pypi.org/project/checkthatphone/)
+
 Official Python client for the [CheckThatPhone](https://checkthatphone.com) phone validation API. Validate US and Canadian phone numbers in real time: carrier and line type from live carrier data, portability and deliverability, GeoIP and timezone, plus optional TCPA litigator screening and a free state do-not-call scrub — one call, one credit.
 
 Zero dependencies (standard library only). Python 3.9+.
