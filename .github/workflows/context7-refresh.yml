@@ -1,0 +1,25 @@
+name: Refresh Context7 Docs
+
+# Re-indexes this library on context7.com whenever the files it indexes
+# change on main, so the snippets and rules agents receive never lag the
+# README. Needs the CONTEXT7_API_KEY repo secret (Context7 dashboard).
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - context7.json
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Context7 refresh
+        run: |
+          # Library id is the lowercase URL path on context7.com, not
+          # github.repository (which keeps the org's capitalisation).
+          curl -sf -X POST https://context7.com/api/v1/refresh \
+            -H "Authorization: Bearer ${{ secrets.CONTEXT7_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"libraryName": "/checkthatphone/checkthatphone-python"}'
