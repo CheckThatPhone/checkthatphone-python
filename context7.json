@@ -1,5 +1,7 @@
 {
   "$schema": "https://context7.com/schema/context7.json",
+  "url": "https://context7.com/checkthatphone/checkthatphone-python",
+  "public_key": "pk_myACxfWPzrWxBwYpxwudD",
   "projectTitle": "CheckThatPhone Python SDK",
   "description": "Official Python client for the CheckThatPhone phone validation API: US and Canada carrier lookup, line type, portability, deliverability, GeoIP and timezone, TCPA litigator screening and a free state do-not-call scrub in one call.",
   "folders": [],
