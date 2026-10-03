@@ -29,17 +29,40 @@ class LookupTests(unittest.TestCase):
 
         with mock.patch("urllib.request.urlopen", side_effect=fake_urlopen):
             client = CheckThatPhone("ctp_live_test")
-            result = client.lookup("(818) 292-5409", litigator_filter=True, dnc_other=True)
+            result = client.lookup("(818) 292-5409", litigator_filter=True, dnc_state=True, dnc_complainer=True)
 
         self.assertEqual(captured["url"], "https://api.checkthatphone.com/v1/lookup")
         self.assertEqual(
             captured["body"],
-            {"phone": "(818) 292-5409", "litigatorFilter": True, "dncOther": True},
+            {"phone": "(818) 292-5409", "litigatorFilter": True, "dncState": True, "dncComplainer": True},
         )
         self.assertEqual(captured["auth"], "Bearer ctp_live_test")
         self.assertTrue(result.success)
         self.assertEqual(result.credits_used, 2)
         self.assertEqual(result.data["nanpType"], "mobile")
+
+    def test_deprecated_dnc_other_sends_both_new_flags(self):
+        captured = {}
+
+        def fake_urlopen(req, timeout=None):
+            captured["body"] = json.loads(req.data.decode())
+            return _fake_response({"success": True, "credits_used": 1, "data": {}})
+
+        with mock.patch("urllib.request.urlopen", side_effect=fake_urlopen):
+            with self.assertWarns(DeprecationWarning):
+                CheckThatPhone("k").lookup("8182925409", dnc_other=True)
+        self.assertEqual(captured["body"], {"phone": "8182925409", "dncState": True, "dncComplainer": True})
+
+    def test_sends_only_the_requested_dnc_check(self):
+        captured = {}
+
+        def fake_urlopen(req, timeout=None):
+            captured["body"] = json.loads(req.data.decode())
+            return _fake_response({"success": True, "credits_used": 1, "data": {}})
+
+        with mock.patch("urllib.request.urlopen", side_effect=fake_urlopen):
+            CheckThatPhone("k").lookup("8182925409", dnc_complainer=True)
+        self.assertEqual(captured["body"], {"phone": "8182925409", "dncComplainer": True})
 
     def test_http_error_becomes_typed_exception(self):
         err = urllib.error.HTTPError(

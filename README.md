@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/checkthatphone)](https://pypi.org/project/checkthatphone/) [![CI](https://github.com/CheckThatPhone/checkthatphone-python/actions/workflows/ci.yml/badge.svg)](https://github.com/CheckThatPhone/checkthatphone-python/actions/workflows/ci.yml) [![python >= 3.9](https://img.shields.io/pypi/pyversions/checkthatphone)](https://pypi.org/project/checkthatphone/)
 
-Official Python client for the [CheckThatPhone](https://checkthatphone.com) phone validation API. Validate US and Canadian phone numbers in real time: carrier and line type from live carrier data, portability and deliverability, GeoIP and timezone, plus optional TCPA litigator screening and a free state do-not-call scrub — one call, one credit.
+Official Python client for the [CheckThatPhone](https://checkthatphone.com) phone validation API. Validate US and Canadian phone numbers in real time: carrier and line type from live carrier data, portability and deliverability, GeoIP and timezone, plus optional TCPA litigator screening and free state do-not-call and complainer scrubs — one call, one credit.
 
 Zero dependencies (standard library only). Python 3.9+.
 
@@ -40,16 +40,21 @@ if result.data.get("litigator") == "true":
     suppress(result.data["subscriber"])
 ```
 
-## State DNC scrub (free)
+## State DNC and complainer scrub (free)
 
-Screen state do-not-call registries (40 states) and a national complainer list at no extra credit:
+Screen state do-not-call registries (38 states plus DC) and a national complainer list at no extra credit. Each check is its own flag:
 
 ```python
-result = client.lookup("8182925409", dnc_other=True)
-result.data.get("dncStateResult")       # "STATE DNC" or ""
-result.data.get("dncComplainerResult")  # "DNC COMPLAINER" or ""
-result.data.get("dncStateCovered")      # "false" = state not in the data; don't read "" as clear
+result = client.lookup("8182925409", dnc_state=True, dnc_complainer=True)
+result.data.get("dncStateChecked")      # "true" when the state check ran; absent for the 12 states with no registry data
+result.data.get("dncStateResult")       # "STATE DNC" on a match, "" otherwise (only when dncStateChecked is "true")
+result.data.get("dncComplainerChecked") # "true" when the complainer check ran
+result.data.get("dncComplainerResult")  # "DNC COMPLAINER" on a match, "" otherwise
 ```
+
+Read `dncStateChecked` before `dncStateResult`: a number in an uncovered state comes back with neither field, which means not checked, not clear. `"error"` means the check could not complete; treat it as unavailable.
+
+`dnc_other=True` still works as a shorthand for both checks, but it is deprecated.
 
 ## Landline SMS reachability
 
