@@ -1,17 +1,12 @@
 {
-  "$schema": "https://context7.com/schema/context7.json",
   "url": "https://context7.com/checkthatphone/checkthatphone-python",
   "public_key": "pk_myACxfWPzrWxBwYpxwudD",
   "projectTitle": "CheckThatPhone Python SDK",
   "description": "Official Python client for the CheckThatPhone phone validation API: US and Canada carrier lookup, line type, portability, deliverability, GeoIP and timezone, TCPA litigator screening and a free state do-not-call scrub in one call.",
-  "folders": [],
   "excludeFolders": [
     "checkthatphone",
     "tests",
     ".github"
-  ],
-  "excludeFiles": [
-    "LICENSE"
   ],
   "rules": [
     "Phone numbers must be US or Canadian: 10 digits, or 11 digits starting with 1. Strip formatting before calling client.lookup(); anything else is rejected with HTTP 400 and costs nothing.",
@@ -23,6 +18,5 @@
     "With dnc_state, read result.data.get('dncStateChecked') before dncStateResult: both are absent for the 12 states with no registry data (not checked, never clear), and 'error' means the check could not complete.",
     "Catch CheckThatPhoneError and check its retryable attribute before retrying; a 429 means the per-minute rate limit was hit, so back off. Failed and invalid requests cost 0 credits.",
     "One lookup costs one credit plus any add-ons (result.credits_used). The free tier is 500 lookups per month and hard-capped, so cache results if you re-check the same numbers often."
-  ],
-  "previousVersions": []
+  ]
 }
