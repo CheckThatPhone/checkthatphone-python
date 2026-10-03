@@ -19,7 +19,17 @@ jobs:
         run: |
           # Library id is the lowercase URL path on context7.com, not
           # github.repository (which keeps the org's capitalisation).
-          curl -sf -X POST https://context7.com/api/v1/refresh \
+          # Context7 refuses refreshes inside its minimum interval with a
+          # 400 "too-early"; that is not a failure of this workflow, the
+          # next eligible push will pick the change up.
+          body=$(curl -s -w '\n%{http_code}' -X POST https://context7.com/api/v1/refresh \
             -H "Authorization: Bearer ${{ secrets.CONTEXT7_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"libraryName": "/checkthatphone/checkthatphone-python"}'
+            -d '{"libraryName": "/checkthatphone/checkthatphone-python"}')
+          code=$(echo "$body" | tail -1); msg=$(echo "$body" | sed '$d')
+          echo "HTTP $code: $msg"
+          case "$code" in
+            200) exit 0 ;;
+            400) echo "$msg" | grep -q too-early && exit 0 || exit 1 ;;
+            *) exit 1 ;;
+          esac
