@@ -3,16 +3,22 @@
   "projectTitle": "CheckThatPhone Python SDK",
   "description": "Official Python client for the CheckThatPhone phone validation API: US and Canada carrier lookup, line type, portability, deliverability, GeoIP and timezone, TCPA litigator screening and a free state do-not-call scrub in one call.",
   "folders": [],
-  "excludeFolders": ["checkthatphone", "tests", ".github"],
-  "excludeFiles": ["LICENSE"],
+  "excludeFolders": [
+    "checkthatphone",
+    "tests",
+    ".github"
+  ],
+  "excludeFiles": [
+    "LICENSE"
+  ],
   "rules": [
     "Phone numbers must be US or Canadian: 10 digits, or 11 digits starting with 1. Strip formatting before calling client.lookup(); anything else is rejected with HTTP 400 and costs nothing.",
     "Keep the API key server-side, e.g. CheckThatPhone(api_key=os.environ['CHECKTHATPHONE_API_KEY']). Never embed it in client-side code.",
     "Every value in result.data is a string: compare with 'true' / 'false' (result.data.get('deliverable') == 'true'), never with booleans. Use .get(), because add-on fields are absent unless requested.",
     "Use result.data['action'] and result.data['deliverable'] as the recommendation for a number. Do not re-derive deliverability from raw carrier fields.",
     "Pass ip= (the contact's IP address) whenever you have it: it upgrades location to city level and sets an IANA timezone (result.data['timezone']) at no extra credit. Without it, location falls back to the area code.",
-    "Add-ons are opt-in keyword arguments: litigator_filter=True costs +1 credit per lookup, landline_sms_lookup=True costs +1 credit only when the number is a landline, dnc_other=True (state DNC registries plus the national complainer list) is free. Enable only the add-ons you read.",
-    "With dnc_other, a blank dncStateResult means clear only when dncStateCovered is 'true'; some states have no registry data, so treat dncStateCovered 'false' as not checked.",
+    "Add-ons are opt-in keyword arguments: litigator_filter=True costs +1 credit per lookup, landline_sms_lookup=True costs +1 credit only when the number is a landline, dnc_state=True (state do-not-call registries) and dnc_complainer=True (national complainer list) are free. Enable only the add-ons you read. dnc_other is a deprecated alias for both DNC checks.",
+    "With dnc_state, read result.data.get('dncStateChecked') before dncStateResult: both are absent for the 12 states with no registry data (not checked, never clear), and 'error' means the check could not complete.",
     "Catch CheckThatPhoneError and check its retryable attribute before retrying; a 429 means the per-minute rate limit was hit, so back off. Failed and invalid requests cost 0 credits.",
     "One lookup costs one credit plus any add-ons (result.credits_used). The free tier is 500 lookups per month and hard-capped, so cache results if you re-check the same numbers often."
   ],

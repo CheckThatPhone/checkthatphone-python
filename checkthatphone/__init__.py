@@ -9,10 +9,11 @@ from __future__ import annotations
 
 import json
 import urllib.error
+import warnings
 import urllib.request
 from typing import Any, Optional
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = ["CheckThatPhone", "CheckThatPhoneError", "LookupResult"]
 
 _DEFAULT_BASE_URL = "https://api.checkthatphone.com"
@@ -71,7 +72,7 @@ class CheckThatPhone:
         from checkthatphone import CheckThatPhone
 
         client = CheckThatPhone(api_key="ctp_live_...")
-        result = client.lookup("8182925409", litigator_filter=True, dnc_other=True)
+        result = client.lookup("8182925409", litigator_filter=True, dnc_state=True)
         if result.data.get("litigator") == "true":
             ...
     """
@@ -92,6 +93,8 @@ class CheckThatPhone:
         ip: Optional[str] = None,
         litigator_filter: bool = False,
         landline_sms_lookup: bool = False,
+        dnc_state: bool = False,
+        dnc_complainer: bool = False,
         dnc_other: bool = False,
     ) -> LookupResult:
         """Validate one US/Canada phone number.
@@ -104,7 +107,13 @@ class CheckThatPhone:
             litigator_filter: TCPA litigator scrub (+1 credit).
             landline_sms_lookup: landline SMS reachability (+1 credit,
                 charged only when the number is a landline).
-            dnc_other: state DNC & complainers scrub (free).
+            dnc_state: state do-not-call registry check (free; 38 states
+                plus DC). Adds ``dncStateChecked`` and ``dncStateResult``;
+                both are absent for the 12 states with no registry data, so
+                absent means not checked, never clear.
+            dnc_complainer: national complainer-list check (free). Adds
+                ``dncComplainerChecked`` and ``dncComplainerResult``.
+            dnc_other: deprecated alias that turns on both DNC checks.
 
         Raises:
             CheckThatPhoneError: for any non-2xx API response.
@@ -117,7 +126,15 @@ class CheckThatPhone:
         if landline_sms_lookup:
             body["landlineSmsLookup"] = True
         if dnc_other:
-            body["dncOther"] = True
+            warnings.warn(
+                "dnc_other is deprecated; use dnc_state and dnc_complainer",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        if dnc_state or dnc_other:
+            body["dncState"] = True
+        if dnc_complainer or dnc_other:
+            body["dncComplainer"] = True
 
         req = urllib.request.Request(
             f"{self._base_url}/v1/lookup",
