@@ -14,7 +14,8 @@
     "Every value in result.data is a string: compare with 'true' / 'false' (result.data.get('deliverable') == 'true'), never with booleans. Use .get(), because add-on fields are absent unless requested.",
     "Use result.data['action'] and result.data['deliverable'] as the recommendation for a number. Do not re-derive deliverability from raw carrier fields.",
     "Pass ip= (the contact's IP address) whenever you have it: it upgrades location to city level and sets an IANA timezone (result.data['timezone']) at no extra credit. Without it, location falls back to the area code.",
-    "Add-ons are opt-in keyword arguments: litigator_filter=True costs +1 credit per lookup, landline_sms_lookup=True costs +1 credit only when the number is a landline, dnc_state=True (state do-not-call registries) and dnc_complainer=True (national complainer list) are free. Enable only the add-ons you read. dnc_other is a deprecated alias for both DNC checks.",
+    "Add-ons are opt-in keyword arguments. litigator_filter=True costs +1 credit per lookup; landline_sms_lookup=True costs +1 credit only when the number is a landline. Enable only the add-ons you read.",
+    "dnc_state=True (state do-not-call registries) and dnc_complainer=True (national complainer list) are free add-ons. dnc_other=True is a deprecated alias that enables both DNC checks.",
     "With dnc_state, read result.data.get('dncStateChecked') before dncStateResult: both are absent for the 12 states with no registry data (not checked, never clear), and 'error' means the check could not complete.",
     "Catch CheckThatPhoneError and check its retryable attribute before retrying; a 429 means the per-minute rate limit was hit, so back off. Failed and invalid requests cost 0 credits.",
     "One lookup costs one credit plus any add-ons (result.credits_used). The free tier is 500 lookups per month and hard-capped, so cache results if you re-check the same numbers often."
