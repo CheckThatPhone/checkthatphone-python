@@ -13,7 +13,7 @@ import warnings
 import urllib.request
 from typing import Any, Optional
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __all__ = ["CheckThatPhone", "CheckThatPhoneError", "LookupResult"]
 
 _DEFAULT_BASE_URL = "https://api.checkthatphone.com"
