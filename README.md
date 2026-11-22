@@ -21,7 +21,7 @@ from checkthatphone import CheckThatPhone
 client = CheckThatPhone(api_key=os.environ["CHECKTHATPHONE_API_KEY"])
 
 result = client.lookup("8182925409")
-print(result.data["nanpType"])     # "mobile"
+print(result.data["dipCarrierType"])  # "mobile"
 print(result.data["dipCarrier"])   # "AT&T"
 print(result.data["deliverable"])  # "true"
 print(result.credits_used)         # 1
